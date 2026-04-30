@@ -1,0 +1,21 @@
+{
+  "name": "Accolink Guesthouses",
+  "short_name": "Accolink",
+  "description": "Find and book guesthouses across Botswana",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#071A0F",
+  "theme_color": "#155235",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/favicon-96x96.png", "sizes": "96x96",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ],
+  "categories": ["travel", "lifestyle", "business"],
+  "screenshots": [],
+  "shortcuts": [
+    { "name": "Browse Stays", "url": "/", "description": "Find guesthouses in Botswana" },
+    { "name": "List Property", "url": "/list-property.html", "description": "List your guesthouse" },
+    { "name": "Dashboard", "url": "/dashboard.html", "description": "Manage your listings" }
+  ]
+}
