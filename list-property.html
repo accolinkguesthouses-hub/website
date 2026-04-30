@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List Your Property — Accolink</title>
+  <meta name="theme-color" content="#155235">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260430" sizes="96x96">
+  <link rel="shortcut icon" href="/favicon.ico?v=20260430">
+  <link rel="manifest" href="/manifest.json?v=20260430">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { padding-top: 68px; }
+    .step-content { display: none; }
+    .step-content.active { display: block; }
+    .price-input-wrap { position: relative; }
+    .price-prefix {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-weight: 700; color: var(--g700); font-size: 1rem;
+    }
+    .price-input-wrap input { padding-left: 30px; }
+    select.form-input { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237A8D82' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    .success-screen { text-align: center; padding: 60px 24px; }
+    .success-icon { font-size: 4rem; margin-bottom: 20px; }
+    .success-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 700; margin-bottom: 14px; }
+    .success-sub { color: var(--ink-lt); font-size: 1.05rem; margin-bottom: 32px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav scrolled" style="background:white;border-bottom:1px solid var(--border)">
+  <a href="/" class="nav-logo">
+    <img src="/image/logo.png" alt="Accolink" onerror="this.style.display='none'">
+    <span class="nav-logo-text">accolink</span>
+  </a>
+  <div class="nav-links">
+    <a href="/">Browse Stays</a>
+    <a href="/dashboard.html">Dashboard</a>
+  </div>
+  <div class="nav-auth-btns">
+    <a href="/auth.html" class="btn-ghost">Sign In</a>
+    <a href="/auth.html?mode=signup" class="btn-primary">Sign Up</a>
+  </div>
+  <div class="nav-user-menu" style="display:none">
+    <a href="/dashboard.html" class="btn-ghost">Dashboard</a>
+    <button class="btn-primary" onclick="handleSignOut()"><span class="user-name-display">Account</span></button>
+  </div>
+  <button class="nav-hamburger" onclick="document.getElementById('mobileMenuLP').classList.toggle('open')" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mobile-menu-overlay" id="mobileMenuLP" onclick="this.classList.remove('open')">
+  <div class="mobile-menu" onclick="event.stopPropagation()">
+    <a href="/">Browse Stays</a>
+    <a href="/dashboard.html">Dashboard</a>
+    <div class="mobile-menu-divider"></div>
+    <a href="/auth.html">Sign In</a>
+  </div>
+</div>
+
+<!-- Auth gate -->
+<div id="authGate" style="display:none;min-height:80vh;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="text-align:center;max-width:400px">
+    <div style="font-size:3rem;margin-bottom:20px">🏠</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:2rem;margin-bottom:12px">List Your Property</h2>
+    <p style="color:var(--ink-lt);margin-bottom:28px">Sign in to start listing your guesthouse on Accolink and reach thousands of travellers across Botswana.</p>
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:300px;margin:0 auto">
+      <a href="/auth.html?mode=signup" class="btn-primary" style="display:block;text-align:center;padding:15px">Create Free Account</a>
+      <a href="/auth.html" class="btn-ghost" style="display:block;text-align:center;padding:15px">Sign In</a>
+    </div>
+  </div>
+</div>
+
+<!-- Main listing form (shown when logged in) -->
+<div id="listingApp" style="display:none">
+
+  <!-- Hero -->
+  <div class="list-hero">
+    <p class="section-eyebrow" style="color:var(--gold-lt);margin-bottom:8px">For Property Owners</p>
+    <h1 class="list-hero-title">List Your Guesthouse</h1>
+    <p class="list-hero-sub">Reach thousands of travellers across Botswana — completely free</p>
+  </div>
+
+  <div class="list-form-wrap">
+
+    <!-- Step Indicator -->
+    <div class="step-indicator" id="stepIndicator">
+      <div class="step active" id="stepEl-1">
+        <div class="step-num">1</div>
+        <span class="step-label">Basic Info</span>
+      </div>
+      <div class="step" id="stepEl-2">
+        <div class="step-num">2</div>
+        <span class="step-label">Details</span>
+      </div>
+      <div class="step" id="stepEl-3">
+        <div class="step-num">3</div>
+        <span class="step-label">Amenities</span>
+      </div>
+      <div class="step" id="stepEl-4">
+        <div class="step-num">4</div>
+        <span class="step-label">Photos</span>
+      </div>
+      <div class="step" id="stepEl-5">
+        <div class="step-num">5</div>
+        <span class="step-label">Review</span>
+      </div>
+    </div>
+
+    <!-- STEP 1: Basic Info -->
+    <div class="step-content active" id="step1">
+      <div class="form-card">
+        <h3 class="form-card-title">Basic Information</h3>
+        <p class="form-card-sub">Tell guests about your property</p>
+
+        <div class="form-group">
+          <label class="form-label">Guesthouse Name *</label>
+          <input type="text" class="form-input" id="f_name" placeholder="e.g. Sunset Lodge Gaborone">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">City *</label>
+            <select class="form-input" id="f_city">
+              <option value="">Select city…</option>
+              <option value="Gaborone">Gaborone</option>
+              <option value="Francistown">Francistown</option>
+              <option value="Kasane">Kasane</option>
+              <option value="Maun">Maun</option>
+              <option value="Palapye">Palapye</option>
+              <option value="Serowe">Serowe</option>
+              <option value="Lobatse">Lobatse</option>
+              <option value="Kanye">Kanye</option>
+              <option value="Molepolole">Molepolole</option>
+              <option value="Ramotswa">Ramotswa</option>
+              <option value="Tlokweng">Tlokweng</option>
+              <option value="Kazungula">Kazungula</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Neighbourhood / Area</label>
+            <input type="text" class="form-input" id="f_neighborhood" placeholder="e.g. Broadhurst, Phase 2">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Street Address</label>
+          <input type="text" class="form-input" id="f_address" placeholder="Plot number, street name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Price Per Night (BWP) *</label>
+          <div class="price-input-wrap">
+            <span class="price-prefix">P</span>
+            <input type="number" class="form-input" id="f_price" placeholder="350" min="50" max="10000">
+          </div>
+        </div>
+      </div>
+      <div class="form-nav">
+        <div></div>
+        <button class="btn-primary" onclick="nextStep(1)" style="padding:13px 32px">Next: Details →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Details -->
+    <div class="step-content" id="step2">
+      <div class="form-card">
+        <h3 class="form-card-title">Property Details</h3>
+        <p class="form-card-sub">Help guests understand what makes your place special</p>
+
+        <div class="form-group">
+          <label class="form-label">Description *</label>
+          <textarea class="form-textarea" id="f_desc" style="min-height:130px" placeholder="Describe your guesthouse — location highlights, atmosphere, what makes it special for guests…"></textarea>
+          <div style="font-size:.78rem;color:var(--ink-lt);margin-top:4px">
+            <span id="descCount">0</span> / 500 characters
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Phone Number *</label>
+            <input type="tel" class="form-input" id="f_phone" placeholder="+267 7X XXX XXX">
+          </div>
+          <div class="form-group">
+            <label class="form-label">WhatsApp Number</label>
+            <input type="tel" class="form-input" id="f_whatsapp" placeholder="+267 7X XXX XXX">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="f_email" placeholder="bookings@yourguesthouse.com">
+        </div>
+      </div>
+      <div class="form-nav">
+        <button class="btn-ghost" onclick="prevStep(2)" style="padding:13px 24px">← Back</button>
+        <button class="btn-primary" onclick="nextStep(2)" style="padding:13px 32px">Next: Amenities →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Amenities -->
+    <div class="step-content" id="step3">
+      <div class="form-card">
+        <h3 class="form-card-title">Amenities</h3>
+        <p class="form-card-sub">Select everything your property offers</p>
+        <div class="amenity-checkgrid" id="amenityCheckGrid">
+          <div style="color:var(--ink-lt)">Loading amenities…</div>
+        </div>
+      </div>
+      <div class="form-nav">
+        <button class="btn-ghost" onclick="prevStep(3)" style="padding:13px 24px">← Back</button>
+        <button class="btn-primary" onclick="nextStep(3)" style="padding:13px 32px">Next: Photos →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Photos -->
+    <div class="step-content" id="step4">
+      <div class="form-card">
+        <h3 class="form-card-title">Property Photos</h3>
+        <p class="form-card-sub">Great photos increase bookings by up to 3×. Add at least one photo.</p>
+
+        <div class="image-upload-zone" id="uploadZone" onclick="document.getElementById('imgInput').click()" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
+          <div class="upload-icon">📸</div>
+          <div class="upload-text">Click to upload or drag & drop</div>
+          <div class="upload-hint">JPG, PNG, WebP · Max 5MB per image · Up to 8 images</div>
+        </div>
+        <input type="file" id="imgInput" multiple accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleFileSelect(this.files)">
+
+        <div class="image-preview-grid" id="imagePreviewGrid"></div>
+        <div id="imgCount" style="font-size:.82rem;color:var(--ink-lt);margin-top:8px"></div>
+      </div>
+      <div class="form-nav">
+        <button class="btn-ghost" onclick="prevStep(4)" style="padding:13px 24px">← Back</button>
+        <button class="btn-primary" onclick="nextStep(4)" style="padding:13px 32px">Next: Review →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Review & Submit -->
+    <div class="step-content" id="step5">
+      <div class="form-card">
+        <h3 class="form-card-title">Review Your Listing</h3>
+        <p class="form-card-sub">Check everything looks correct before publishing</p>
+
+        <!-- Preview card -->
+        <div style="border:1.5px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:24px">
+          <div style="height:200px;background:var(--cream2);overflow:hidden" id="previewImgWrap">
+            <img id="previewImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
+            <div id="previewImgPlaceholder" style="height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem">🏠</div>
+          </div>
+          <div style="padding:24px">
+            <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;margin-bottom:8px" id="prevName">Your Guesthouse</h3>
+            <div style="display:flex;align-items:center;gap:6px;color:var(--ink-lt);font-size:.9rem;margin-bottom:12px">
+              📍 <span id="prevLocation">Location</span>
+            </div>
+            <div style="font-size:1.4rem;font-weight:700;color:var(--gold-dk);font-family:'Cormorant Garamond',serif;margin-bottom:12px">
+              <span id="prevPrice">P0</span><span style="font-size:.8rem;color:var(--ink-lt);font-family:'DM Sans',sans-serif">/night</span>
+            </div>
+            <div id="prevAmenities" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
+            <p id="prevDesc" style="color:var(--ink-mid);font-size:.9rem;line-height:1.7"></p>
+          </div>
+        </div>
+
+        <div style="background:var(--g100);border-radius:var(--r-lg);padding:16px 20px;font-size:.875rem;color:var(--g700)">
+          ✅ Your listing will go live immediately after submission. You can edit it anytime from your dashboard.
+        </div>
+      </div>
+
+      <div class="form-nav">
+        <button class="btn-ghost" onclick="prevStep(5)" style="padding:13px 24px">← Back</button>
+        <button class="btn-gold btn-lg" onclick="submitListing()" id="submitBtn">🚀 Publish Listing</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="step-content" id="stepSuccess">
+      <div class="form-card success-screen">
+        <div class="success-icon">🎉</div>
+        <h2 class="success-title">You're live!</h2>
+        <p class="success-sub">Your guesthouse has been published on Accolink.<br>Guests can now find and contact you directly.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <a href="/" class="btn-primary" style="display:inline-block;padding:14px 28px">Browse Listings</a>
+          <a href="/dashboard.html" class="btn-ghost" style="display:inline-block;padding:14px 28px">Go to Dashboard</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /list-form-wrap -->
+</div><!-- /listingApp -->
+
+<!-- FOOTER -->
+<footer style="margin-top:0">
+  <div class="footer-bottom footer-pad" style="max-width:1200px;margin:0 auto;border-top:1px solid rgba(255,255,255,.07)">
+    <div class="footer-legal">
+      <span class="footer-copy">©2026 Accolink Guesthouses</span>
+      <span class="footer-sep">·</span>
+      <button class="footer-legal-btn" onclick="window.location='/privacy.html'">Privacy</button>
+      <span class="footer-sep">·</span>
+      <button class="footer-legal-btn" onclick="window.location='/terms.html'">Terms</button>
+      <span class="footer-sep">·</span>
+      <button class="footer-legal-btn" onclick="window.location='/help.html'">Help</button>
+    </div>
+    <div class="footer-right">
+      <div class="footer-currency"><span>BWP</span> Botswana Pula</div>
+      <div class="footer-social">
+        <a href="https://instagram.com" class="social-btn" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://twitter.com" class="social-btn" target="_blank" rel="noopener" aria-label="X">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="https://facebook.com" class="social-btn" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/js/config.js"></script>
+<script>
+let currentUser = null;
+let currentStep = 1;
+let allAmenities = [];
+let selectedAmenities = [];
+let selectedFiles = [];
+
+// ── AUTH CHECK ──
+(async () => {
+  const user = await Auth.getUser();
+  if (!user) {
+    document.getElementById('authGate').style.display = 'flex';
+    return;
+  }
+  currentUser = user;
+  document.getElementById('listingApp').style.display = 'block';
+  document.getElementById('authGate').style.display   = 'none';
+  await loadAmenities();
+})();
+
+async function loadAmenities() {
+  const { data } = await API.getAllAmenities();
+  allAmenities = data || [];
+  const grid = document.getElementById('amenityCheckGrid');
+  grid.innerHTML = allAmenities.map(a => `
+    <div class="amenity-check" id="ac_${a.id}" onclick="toggleAmenity('${a.id}', this)">
+      <input type="checkbox" style="display:none">
+      <span class="amenity-check-icon">${a.icon || '•'}</span>
+      <span class="amenity-check-name">${a.name}</span>
+    </div>`).join('');
+}
+
+function toggleAmenity(id, el) {
+  el.classList.toggle('checked');
+  if (el.classList.contains('checked')) {
+    if (!selectedAmenities.includes(id)) selectedAmenities.push(id);
+  } else {
+    selectedAmenities = selectedAmenities.filter(x => x !== id);
+  }
+}
+
+// ── STEPS ──
+function nextStep(from) {
+  if (!validateStep(from)) return;
+  if (from === 4) buildPreview();
+  goToStep(from + 1);
+}
+function prevStep(from) { goToStep(from - 1); }
+
+function goToStep(n) {
+  document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+  document.getElementById(`step${n}`)?.classList.add('active');
+  currentStep = n;
+  updateStepIndicator(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateStepIndicator(n) {
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById(`stepEl-${i}`);
+    if (!el) continue;
+    el.classList.remove('active','done');
+    if (i === n) el.classList.add('active');
+    if (i < n)  el.classList.add('done');
+  }
+}
+
+function validateStep(step) {
+  if (step === 1) {
+    if (!document.getElementById('f_name').value.trim())  { Utils.toast('Please enter a property name', 'error'); return false; }
+    if (!document.getElementById('f_city').value)         { Utils.toast('Please select a city', 'error'); return false; }
+    if (!document.getElementById('f_price').value || document.getElementById('f_price').value < 50) { Utils.toast('Please enter a valid nightly price', 'error'); return false; }
+  }
+  if (step === 2) {
+    if (!document.getElementById('f_desc').value.trim())  { Utils.toast('Please add a description', 'error'); return false; }
+    if (!document.getElementById('f_phone').value.trim()) { Utils.toast('Please add a contact phone number', 'error'); return false; }
+  }
+  return true;
+}
+
+// ── DESCRIPTION COUNTER ──
+document.addEventListener('DOMContentLoaded', () => {
+  const desc = document.getElementById('f_desc');
+  if (desc) {
+    desc.addEventListener('input', () => {
+      document.getElementById('descCount').textContent = desc.value.length;
+      if (desc.value.length > 500) desc.value = desc.value.slice(0, 500);
+    });
+  }
+});
+
+// ── IMAGE HANDLING ──
+function handleFileSelect(files) {
+  for (const file of files) {
+    if (selectedFiles.length >= 8) { Utils.toast('Maximum 8 photos allowed', 'error'); break; }
+    if (file.size > 5 * 1024 * 1024) { Utils.toast(`${file.name} is over 5MB`, 'error'); continue; }
+    selectedFiles.push(file);
+  }
+  renderPreviews();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  handleFileSelect(e.dataTransfer.files);
+}
+
+function renderPreviews() {
+  const grid = document.getElementById('imagePreviewGrid');
+  grid.innerHTML = selectedFiles.map((f, i) => {
+    const url = URL.createObjectURL(f);
+    return `<div class="img-preview">
+      <img src="${url}" alt="">
+      <button class="img-preview-remove" onclick="removeImg(${i})">✕</button>
+    </div>`;
+  }).join('');
+  document.getElementById('imgCount').textContent = selectedFiles.length
+    ? `${selectedFiles.length} photo${selectedFiles.length > 1 ? 's' : ''} selected${selectedFiles[0] ? ' — first photo will be the cover' : ''}`
+    : '';
+}
+
+function removeImg(idx) {
+  selectedFiles.splice(idx, 1);
+  renderPreviews();
+}
+
+// ── PREVIEW ──
+function buildPreview() {
+  document.getElementById('prevName').textContent     = document.getElementById('f_name').value;
+  const city  = document.getElementById('f_city').value;
+  const neigh = document.getElementById('f_neighborhood').value;
+  document.getElementById('prevLocation').textContent = neigh ? `${neigh}, ${city}` : city;
+  document.getElementById('prevPrice').textContent    = `P${document.getElementById('f_price').value}`;
+  document.getElementById('prevDesc').textContent     = document.getElementById('f_desc').value;
+
+  const am = allAmenities.filter(a => selectedAmenities.includes(a.id)).slice(0, 4);
+  document.getElementById('prevAmenities').innerHTML  = am.map(a => `<span class="amenity-chip">${a.icon||''} ${a.name}</span>`).join('');
+
+  if (selectedFiles[0]) {
+    const url = URL.createObjectURL(selectedFiles[0]);
+    document.getElementById('previewImg').src           = url;
+    document.getElementById('previewImg').style.display = 'block';
+    document.getElementById('previewImgPlaceholder').style.display = 'none';
+  }
+}
+
+// ── SUBMIT ──
+async function submitListing() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled     = true;
+  btn.textContent  = '⏳ Publishing…';
+
+  const listingData = {
+    name:            document.getElementById('f_name').value.trim(),
+    city:            document.getElementById('f_city').value,
+    neighborhood:    document.getElementById('f_neighborhood').value.trim(),
+    address:         document.getElementById('f_address').value.trim(),
+    price_per_night: parseFloat(document.getElementById('f_price').value),
+    description:     document.getElementById('f_desc').value.trim(),
+    phone:           document.getElementById('f_phone').value.trim(),
+    whatsapp:        document.getElementById('f_whatsapp').value.trim() || document.getElementById('f_phone').value.trim(),
+    email:           document.getElementById('f_email').value.trim(),
+    amenities:       selectedAmenities
+  };
+
+  const { data: gh, error } = await API.createListing(listingData, currentUser.id);
+  if (error) {
+    Utils.toast('Could not publish listing: ' + error.message, 'error');
+    btn.disabled = false; btn.textContent = '🚀 Publish Listing';
+    return;
+  }
+
+  // Upload images
+  if (selectedFiles.length && gh) {
+    for (let i = 0; i < selectedFiles.length; i++) {
+      await API.uploadImage(selectedFiles[i], currentUser.id, gh.id, i === 0, i);
+    }
+  }
+
+  // Update profile role to host
+  await Auth.updateProfile(currentUser.id, { role: 'host' });
+
+  // Show success
+  document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+  document.getElementById('stepSuccess').classList.add('active');
+  document.getElementById('stepIndicator').style.display = 'none';
+}
+
+function handleSignOut() {
+  Auth.signOut().then(() => window.location = '/');
+}
+</script>
+</body>
+</html>

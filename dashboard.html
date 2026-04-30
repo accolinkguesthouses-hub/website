@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Accolink</title>
+  <meta name="theme-color" content="#071A0F">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260430" sizes="96x96">
+  <link rel="shortcut icon" href="/favicon.ico?v=20260430">
+  <link rel="manifest" href="/manifest.json?v=20260430">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background: var(--cream); overflow-x: hidden; }
+    .dash-page-section { display: none; }
+    .dash-page-section.active { display: block; }
+    .mob-menu-btn {
+      display: none; background: none; border: none; cursor: pointer;
+      color: var(--ink); font-size: 1.3rem; padding: 4px;
+    }
+    @media (max-width: 900px) { .mob-menu-btn { display: block; } }
+
+    /* Mini chart */
+    .mini-chart { display: flex; align-items: flex-end; gap: 4px; height: 50px; }
+    .mini-bar {
+      flex: 1; border-radius: 3px 3px 0 0;
+      background: var(--g300); min-width: 6px;
+      transition: height 0.6s var(--ease);
+    }
+    .mini-bar.highlight { background: var(--g600); }
+
+    /* Listing row card */
+    .listing-row {
+      background: white; border-radius: var(--r-lg);
+      padding: 20px; border: 1px solid var(--border);
+      display: grid; grid-template-columns: 80px 1fr auto;
+      gap: 16px; align-items: center; margin-bottom: 12px;
+      transition: all var(--t);
+    }
+    .listing-row:hover { box-shadow: var(--sh-md); transform: translateX(3px); }
+    .listing-row-img { width: 80px; height: 70px; border-radius: var(--r-md); overflow: hidden; }
+    .listing-row-img img { width: 100%; height: 100%; object-fit: cover; }
+    .listing-row-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+    .listing-row-meta { font-size: 0.82rem; color: var(--ink-lt); margin-top: 4px; }
+    .listing-row-stats { display: flex; gap: 20px; }
+    .lrs { text-align: center; }
+    .lrs-num { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; color: var(--ink); display: block; }
+    .lrs-label { font-size: 0.7rem; color: var(--ink-lt); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Booking confirm */
+    .book-action-btns { display: flex; gap: 8px; }
+    .btn-confirm {
+      padding: 6px 14px; border-radius: var(--r-sm);
+      background: var(--g100); color: var(--g700);
+      font-size: 0.78rem; font-weight: 700;
+      border: 1.5px solid var(--g300);
+      transition: all var(--t);
+    }
+    .btn-confirm:hover { background: var(--g700); color: white; border-color: var(--g700); }
+
+    /* Welcome card */
+    .welcome-card {
+      background: linear-gradient(135deg, var(--g800), var(--g900));
+      border-radius: var(--r-xl); padding: 32px 36px; margin-bottom: 28px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .welcome-card::after {
+      content: '';
+      position: absolute; right: -60px; top: -60px;
+      width: 240px; height: 240px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(34,139,87,0.2), transparent 70%);
+      pointer-events: none;
+    }
+    .welcome-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700; color: white; margin-bottom: 6px; }
+    .welcome-sub   { color: rgba(255,255,255,0.55); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<div class="dashboard" id="dashApp" style="display:none">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="/image/logo.png" alt="" width="32" onerror="this.style.display='none'">
+      <span class="sidebar-logo-text">accolink</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <p class="sidebar-section-label">Overview</p>
+      <div class="sidebar-item active" onclick="showSection('overview', this)">
+        <span class="sidebar-icon">📊</span> Dashboard
+      </div>
+      <div class="sidebar-item" onclick="showSection('bookings', this)">
+        <span class="sidebar-icon">📅</span> Bookings
+        <span class="sidebar-badge" id="pendingCount">0</span>
+      </div>
+      <div class="sidebar-item" onclick="showSection('reviews', this)">
+        <span class="sidebar-icon">⭐</span> Reviews
+      </div>
+
+      <p class="sidebar-section-label">My Properties</p>
+      <div class="sidebar-item" onclick="showSection('listings', this)">
+        <span class="sidebar-icon">🏠</span> My Listings
+      </div>
+      <div class="sidebar-item" onclick="window.location='/list-property.html'">
+        <span class="sidebar-icon">➕</span> Add Property
+      </div>
+
+      <p class="sidebar-section-label">Account</p>
+      <div class="sidebar-item" onclick="showSection('profile', this)">
+        <span class="sidebar-icon">👤</span> Profile
+      </div>
+      <div class="sidebar-item" onclick="window.location='/'">
+        <span class="sidebar-icon">🌍</span> Back to Site
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">?</div>
+        <div>
+          <div class="sidebar-user-name" id="sidebarName">Loading…</div>
+          <div class="sidebar-user-role" id="sidebarRole">Guest</div>
+        </div>
+      </div>
+      <button onclick="handleSignOut()" style="width:100%;padding:10px 12px;border-radius:var(--r-md);color:rgba(255,255,255,0.4);font-size:0.85rem;text-align:left;background:none;border:none;cursor:pointer;margin-top:4px;transition:all .2s">
+        🚪 Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- HEADER -->
+  <header class="dash-header">
+    <div style="display:flex;align-items:center;gap:14px">
+      <button class="mob-menu-btn" onclick="toggleSidebar()">☰</button>
+      <h1 class="dash-header-title" id="dashTitle">Dashboard</h1>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="/list-property.html" class="btn-primary" style="font-size:.85rem;padding:8px 18px">+ List Property</a>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="dash-main" id="dashMain">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="dash-page-section active" id="sec-overview">
+      <div class="welcome-card">
+        <div>
+          <div class="welcome-title">Welcome back, <span id="welcomeName">there</span> 👋</div>
+          <div class="welcome-sub">Here's what's happening with your Accolink account today.</div>
+        </div>
+        <a href="/list-property.html" class="btn-gold" style="white-space:nowrap;flex-shrink:0">+ Add Property</a>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="stats-grid" id="overviewStats">
+        <div class="stat-card">
+          <div class="stat-icon green">👁️</div>
+          <div class="stat-num" id="statViews">—</div>
+          <div class="stat-label">Total Views</div>
+          <div class="stat-delta">Property impressions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold">🖱️</div>
+          <div class="stat-num" id="statClicks">—</div>
+          <div class="stat-label">Total Clicks</div>
+          <div class="stat-delta">Explored listings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">📩</div>
+          <div class="stat-num" id="statRequests">—</div>
+          <div class="stat-label">Booking Requests</div>
+          <div class="stat-delta">Contact attempts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">⭐</div>
+          <div class="stat-num" id="statRatings">—</div>
+          <div class="stat-label">Total Ratings</div>
+          <div class="stat-delta">Guest reviews</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold">⏳</div>
+          <div class="stat-num" id="statPending">—</div>
+          <div class="stat-label">Pending Bookings</div>
+          <div class="stat-delta">Awaiting confirmation</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">✅</div>
+          <div class="stat-num" id="statSuccess">—</div>
+          <div class="stat-label">Successful Bookings</div>
+          <div class="stat-delta">Confirmed stays</div>
+        </div>
+      </div>
+
+      <!-- Recent bookings preview -->
+      <div class="data-card">
+        <div class="data-card-header">
+          <span class="data-card-title">Recent Booking Requests</span>
+          <button onclick="showSection('bookings', null)" style="font-size:.85rem;color:var(--g700);font-weight:600;background:none;border:none;cursor:pointer">View all →</button>
+        </div>
+        <div id="recentBookingsPreview" style="padding:0 20px 12px">
+          <p style="color:var(--ink-lt);padding:20px 0;text-align:center">Loading…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BOOKINGS ── -->
+    <div class="dash-page-section" id="sec-bookings">
+      <h2 style="font-family:'Cormorant Garamond',serif;margin-bottom:24px">Bookings</h2>
+
+      <!-- Tabs: Pending / Successful / All -->
+      <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap">
+        <button class="filter-pill active" onclick="filterBookings('all', this)">All</button>
+        <button class="filter-pill" onclick="filterBookings('pending', this)">⏳ Pending</button>
+        <button class="filter-pill" onclick="filterBookings('successful', this)">✅ Successful</button>
+        <button class="filter-pill" onclick="filterBookings('cancelled', this)">❌ Cancelled</button>
+      </div>
+
+      <div class="data-card">
+        <table class="data-table" id="bookingsTable">
+          <thead>
+            <tr>
+              <th>Guest</th>
+              <th>Property</th>
+              <th>Method</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsBody">
+            <tr><td colspan="6" style="text-align:center;color:var(--ink-lt);padding:32px">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── REVIEWS ── -->
+    <div class="dash-page-section" id="sec-reviews">
+      <h2 style="font-family:'Cormorant Garamond',serif;margin-bottom:24px">Guest Reviews</h2>
+      <div id="reviewsDash" style="max-width:700px">
+        <p style="color:var(--ink-lt)">Loading reviews…</p>
+      </div>
+    </div>
+
+    <!-- ── MY LISTINGS ── -->
+    <div class="dash-page-section" id="sec-listings">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <h2 style="font-family:'Cormorant Garamond',serif">My Properties</h2>
+        <a href="/list-property.html" class="btn-primary">+ Add New Property</a>
+      </div>
+      <div id="myListings">
+        <p style="color:var(--ink-lt)">Loading…</p>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div class="dash-page-section" id="sec-profile">
+      <h2 style="font-family:'Cormorant Garamond',serif;margin-bottom:24px">Profile Settings</h2>
+      <div class="form-card" style="max-width:560px">
+        <h3 class="form-card-title">Personal Information</h3>
+        <p class="form-card-sub">Update your account details</p>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="profName">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="profEmail" disabled style="opacity:.6">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" class="form-input" id="profPhone" placeholder="+267 7X XXX XXX">
+        </div>
+        <button class="btn-primary" onclick="saveProfile()" style="padding:13px 32px">Save Changes</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Auth guard message -->
+<div id="authGuard" style="display:none;min-height:100svh;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="text-align:center;max-width:380px">
+    <div style="font-size:3rem;margin-bottom:16px">🔐</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;margin-bottom:10px">Sign in required</h2>
+    <p style="color:var(--ink-lt);margin-bottom:24px">Please sign in to access your dashboard.</p>
+    <a href="/auth.html" class="btn-primary" style="display:inline-block;padding:14px 36px">Go to Sign In</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/js/config.js"></script>
+<script>
+let currentUser  = null;
+let allBookings  = [];
+let bookingFilter = 'all';
+
+// ── INIT ──
+(async () => {
+  const user = await Auth.getUser();
+  if (!user) {
+    document.getElementById('authGuard').style.display = 'flex';
+    return;
+  }
+  currentUser = user;
+  document.getElementById('dashApp').style.display = 'grid';
+  document.getElementById('authGuard').style.display = 'none';
+  await loadDashboard();
+})();
+
+async function loadDashboard() {
+  const name = currentUser.user_metadata?.full_name || currentUser.email;
+  const initial = name[0].toUpperCase();
+  document.getElementById('sidebarAvatar').textContent = initial;
+  document.getElementById('sidebarName').textContent   = name;
+  document.getElementById('welcomeName').textContent   = name.split(' ')[0];
+  document.getElementById('profEmail').value           = currentUser.email;
+
+  const { data: profile } = await Auth.getProfile(currentUser.id);
+  if (profile) {
+    document.getElementById('sidebarRole').textContent = profile.role === 'host' ? 'Property Host' : 'Guest';
+    document.getElementById('profName').value  = profile.full_name || '';
+    document.getElementById('profPhone').value = profile.phone    || '';
+  }
+
+  await Promise.all([loadStats(), loadBookings(), loadReviews(), loadListings()]);
+}
+
+async function loadStats() {
+  // Get host bookings and analytics
+  const { data: ghs } = await API.getOwnerGuesthouses(currentUser.id);
+  const { data: bookings } = await API.getHostBookings(currentUser.id);
+
+  // Also load guest bookings
+  const { data: guestBookings } = await API.getGuestBookings(currentUser.id);
+
+  // Merge unique
+  const allB = [...(bookings || []), ...(guestBookings || [])];
+  allBookings = allB.filter((b, i, arr) => arr.findIndex(x => x.id === b.id) === i);
+
+  const pending    = allBookings.filter(b => b.status === 'pending').length;
+  const successful = allBookings.filter(b => b.status === 'successful').length;
+  document.getElementById('pendingCount').textContent = pending;
+
+  // Aggregate analytics from listings
+  let views = 0, clicks = 0, requests = 0, ratings = 0;
+  (ghs || []).forEach(g => {
+    views    += g.views    || 0;
+    clicks   += g.clicks   || 0;
+    requests += g.booking_requests || 0;
+    ratings  += g.review_count || 0;
+  });
+
+  document.getElementById('statViews').textContent    = views;
+  document.getElementById('statClicks').textContent   = clicks;
+  document.getElementById('statRequests').textContent = requests;
+  document.getElementById('statRatings').textContent  = ratings;
+  document.getElementById('statPending').textContent  = pending;
+  document.getElementById('statSuccess').textContent  = successful;
+
+  renderRecentBookings(allBookings.slice(0, 4));
+}
+
+async function loadBookings() {
+  renderBookingsTable(allBookings);
+}
+
+function renderRecentBookings(bookings) {
+  const el = document.getElementById('recentBookingsPreview');
+  if (!bookings.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><h3 class="empty-state-title">No booking requests yet</h3><p>When guests contact your properties, they'll appear here.</p></div>`;
+    return;
+  }
+  el.innerHTML = bookings.map(b => buildBookingRow(b)).join('');
+}
+
+function buildBookingRow(b) {
+  const ghName   = b.guesthouses?.name || 'Unknown Property';
+  const gName    = b.guest_name || b.profiles?.full_name || 'Guest';
+  const method   = b.method === 'whatsapp' ? '💬 WhatsApp' : '📞 Call';
+  const dateStr  = Utils.timeAgo(b.created_at);
+  const badge    = `<span class="status-badge ${b.status}"><span class="status-dot"></span>${b.status}</span>`;
+  const actions  = b.status === 'pending'
+    ? `<div class="book-action-btns">
+         <button class="btn-confirm" onclick="updateBooking('${b.id}','successful')">✅ Confirm</button>
+         <button class="btn-confirm" style="color:#dc2626;border-color:#fca5a5;background:rgba(239,68,68,.05)" onclick="updateBooking('${b.id}','cancelled')">✕ Cancel</button>
+       </div>` : '';
+  return `
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">
+    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--g400),var(--g600));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;flex-shrink:0">${gName[0].toUpperCase()}</div>
+    <div style="flex:1;min-width:120px">
+      <div style="font-weight:600;font-size:.9rem">${gName}</div>
+      <div style="font-size:.78rem;color:var(--ink-lt)">${ghName} · ${method} · ${dateStr}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      ${badge}
+      ${actions}
+    </div>
+  </div>`;
+}
+
+function renderBookingsTable(bookings) {
+  const tbody = document.getElementById('bookingsBody');
+  const list  = bookingFilter === 'all' ? bookings : bookings.filter(b => b.status === bookingFilter);
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-lt);padding:32px">No bookings found</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(b => {
+    const ghName  = b.guesthouses?.name || 'Unknown';
+    const gName   = b.guest_name || b.profiles?.full_name || 'Guest';
+    const method  = b.method === 'whatsapp' ? '💬 WhatsApp' : '📞 Call';
+    const badge   = `<span class="status-badge ${b.status}"><span class="status-dot"></span>${b.status}</span>`;
+    const actions = b.status === 'pending'
+      ? `<div class="book-action-btns">
+           <button class="btn-confirm" onclick="updateBooking('${b.id}','successful')">Confirm</button>
+           <button class="btn-confirm" style="color:#dc2626;border-color:#fca5a5" onclick="updateBooking('${b.id}','cancelled')">Cancel</button>
+         </div>` : `<span style="color:var(--ink-lt);font-size:.82rem">—</span>`;
+    return `<tr>
+      <td><strong>${gName}</strong></td>
+      <td>${ghName}</td>
+      <td>${method}</td>
+      <td style="color:var(--ink-lt)">${Utils.timeAgo(b.created_at)}</td>
+      <td>${badge}</td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterBookings(status, btn) {
+  bookingFilter = status;
+  document.querySelectorAll('#sec-bookings .filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderBookingsTable(allBookings);
+}
+
+async function updateBooking(id, status) {
+  const { error } = await API.updateBookingStatus(id, status);
+  if (error) { Utils.toast('Could not update booking', 'error'); return; }
+  const b = allBookings.find(b => b.id === id);
+  if (b) b.status = status;
+  Utils.toast(status === 'successful' ? '✅ Booking confirmed!' : 'Booking cancelled', status === 'successful' ? 'success' : 'info');
+  renderRecentBookings(allBookings.slice(0, 4));
+  renderBookingsTable(allBookings);
+  // Update pending count
+  const pending = allBookings.filter(b => b.status === 'pending').length;
+  document.getElementById('pendingCount').textContent = pending;
+  document.getElementById('statPending').textContent  = pending;
+  document.getElementById('statSuccess').textContent  = allBookings.filter(b => b.status === 'successful').length;
+}
+
+async function loadReviews() {
+  const { data: ghs } = await API.getOwnerGuesthouses(currentUser.id);
+  const el = document.getElementById('reviewsDash');
+  if (!ghs?.length) {
+    el.innerHTML = '<p style="color:var(--ink-lt)">List a property to receive guest reviews.</p>';
+    return;
+  }
+  let html = '';
+  for (const gh of ghs) {
+    const { data: reviews } = await API.getReviews(gh.id);
+    if (!reviews?.length) continue;
+    html += `<div style="margin-bottom:32px">
+      <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:16px">${gh.name}
+        <span style="font-size:.9rem;color:var(--ink-lt);font-family:'DM Sans',sans-serif;font-weight:400"> · ⭐ ${gh.avg_rating || 0} (${gh.review_count})</span>
+      </h3>`;
+    html += reviews.map(r => {
+      const name = r.reviewer_name || r.profiles?.full_name || 'Guest';
+      return `<div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">${name[0].toUpperCase()}</div>
+          <div><div class="review-name">${name}</div><div class="review-date">${Utils.timeAgo(r.created_at)}</div></div>
+          <div class="review-stars" style="margin-left:auto">${Utils.stars(r.rating)}</div>
+        </div>
+        <p class="review-comment">${r.comment || ''}</p>
+      </div>`;
+    }).join('');
+    html += '</div>';
+  }
+  el.innerHTML = html || '<p style="color:var(--ink-lt)">No reviews yet.</p>';
+}
+
+async function loadListings() {
+  const { data: ghs } = await API.getOwnerGuesthouses(currentUser.id);
+  const el = document.getElementById('myListings');
+  if (!ghs?.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">🏠</div>
+      <h3 class="empty-state-title">No properties yet</h3>
+      <p>Add your first guesthouse and start reaching guests.</p>
+      <a href="/list-property.html" class="btn-primary" style="display:inline-block;margin-top:20px;padding:12px 28px">List Your Property</a>
+    </div>`;
+    return;
+  }
+  el.innerHTML = ghs.map(gh => `
+    <div class="listing-row">
+      <div class="listing-row-img">
+        <img src="${gh.primary_image || 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=200'}" alt="${gh.name}" loading="lazy">
+      </div>
+      <div>
+        <div class="listing-row-name">${gh.name}</div>
+        <div class="listing-row-meta">📍 ${gh.city}${gh.neighborhood ? ', ' + gh.neighborhood : ''} · ${Utils.formatPrice(gh.price_per_night)}/night · <span class="status-badge ${gh.status}" style="font-size:.7rem">${gh.status}</span></div>
+        <div style="margin-top:8px;display:flex;align-items:center;gap:16px;font-size:.82rem;color:var(--ink-lt)">
+          <span>⭐ ${gh.avg_rating || 0} (${gh.review_count} reviews)</span>
+          <span>👁 ${gh.views || 0} views</span>
+          <span>🖱 ${gh.clicks || 0} clicks</span>
+        </div>
+      </div>
+      <div class="listing-row-stats">
+        <div class="lrs"><span class="lrs-num">${gh.booking_requests || 0}</span><span class="lrs-label">Requests</span></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── NAV ──
+function showSection(id, btn) {
+  document.querySelectorAll('.dash-page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(`sec-${id}`)?.classList.add('active');
+  if (btn) btn.classList.add('active');
+
+  const titles = { overview:'Dashboard', bookings:'Bookings', reviews:'Reviews', listings:'My Properties', profile:'Profile' };
+  document.getElementById('dashTitle').textContent = titles[id] || 'Dashboard';
+  closeSidebar();
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar()  { document.getElementById('sidebar').classList.remove('open'); }
+
+async function saveProfile() {
+  const name  = document.getElementById('profName').value.trim();
+  const phone = document.getElementById('profPhone').value.trim();
+  const { error } = await Auth.updateProfile(currentUser.id, { full_name: name, phone });
+  if (error) { Utils.toast('Could not save profile', 'error'); return; }
+  Utils.toast('Profile updated!', 'success');
+  document.getElementById('sidebarName').textContent = name;
+}
+
+async function handleSignOut() {
+  await Auth.signOut();
+  window.location = '/';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Accolink — Find Guesthouses in Botswana</title>
+  <meta name="description" content="Discover and book the best guesthouses across Botswana. Browse properties in Gaborone, Kasane, Maun, Francistown and more.">
+  <meta name="theme-color" content="#155235">
+  <meta property="og:title" content="Accolink — Guesthouses in Botswana">
+  <meta property="og:description" content="Find and book guesthouses across Botswana's most beautiful destinations.">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260430" sizes="96x96">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260430">
+  <link rel="shortcut icon" href="/favicon.ico?v=20260430">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260430">
+  <meta name="apple-mobile-web-app-title" content="Accolink">
+  <link rel="manifest" href="/manifest.json?v=20260430">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ============================================================
+  NAV
+  ============================================================ -->
+<nav class="nav hero-nav" id="mainNav">
+  <a href="/" class="nav-logo">
+    <img src="/image/logo.png" alt="Accolink" onerror="this.style.display='none'">
+    <span class="nav-logo-text">accolink</span>
+  </a>
+
+  <div class="nav-links">
+    <a href="#cities" onclick="scrollToSection('cities')">Destinations</a>
+    <a href="/list-property.html">List Property</a>
+    <a href="/help.html">Help</a>
+  </div>
+
+  <div class="nav-auth-btns">
+    <a href="/auth.html" class="btn-ghost">Sign In</a>
+    <a href="/auth.html?mode=signup" class="btn-primary">Sign Up</a>
+  </div>
+
+  <div class="nav-user-menu" style="display:none">
+    <a href="/dashboard.html" class="btn-ghost">Dashboard</a>
+    <button class="btn-primary" onclick="handleSignOut()">
+      <span class="user-name-display">Account</span>
+    </button>
+  </div>
+
+  <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu-overlay" id="mobileMenu" onclick="closeMobileMenu()">
+  <div class="mobile-menu" onclick="event.stopPropagation()">
+    <a href="#cities" onclick="scrollToSection('cities');closeMobileMenu()">Destinations</a>
+    <a href="/list-property.html">List Property</a>
+    <a href="/help.html">Help</a>
+    <div class="mobile-menu-divider"></div>
+    <div id="mobileAuthLinks">
+      <a href="/auth.html">Sign In</a>
+      <a href="/auth.html?mode=signup">Sign Up Free</a>
+    </div>
+    <div id="mobileUserLinks" style="display:none">
+      <a href="/dashboard.html">Dashboard</a>
+      <button onclick="handleSignOut()">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+  HERO
+  ============================================================ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Now available across Botswana
+    </div>
+
+    <h1 class="hero-title">
+      Your perfect stay<br>
+      <span>awaits in Botswana</span>
+    </h1>
+    <p class="hero-subtitle">
+      Discover handpicked guesthouses from Gaborone to Kasane. Compare prices, read reviews, and book in minutes.
+    </p>
+
+    <!-- Search Widget -->
+    <div class="search-widget">
+      <div class="search-field">
+        <label class="search-field-label">Destination</label>
+        <select id="heroCity" onchange="filterByCity(this.value)">
+          <option value="">Any city in Botswana</option>
+          <option value="Gaborone">Gaborone</option>
+          <option value="Francistown">Francistown</option>
+          <option value="Kasane">Kasane</option>
+          <option value="Maun">Maun</option>
+          <option value="Palapye">Palapye</option>
+          <option value="Serowe">Serowe</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label class="search-field-label">Budget (per night)</label>
+        <select id="heroBudget" onchange="filterByBudget(this.value)">
+          <option value="">Any budget</option>
+          <option value="budget">Under P400</option>
+          <option value="mid">P400 – P600</option>
+          <option value="premium">P600+</option>
+        </select>
+      </div>
+      <button class="search-btn" onclick="applySearch()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        Search
+      </button>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-num" id="statProps">14</span>
+        <span class="hero-stat-label">Properties listed</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">6</span>
+        <span class="hero-stat-label">Cities covered</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">4.8★</span>
+        <span class="hero-stat-label">Average rating</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+  CITIES
+  ============================================================ -->
+<section class="cities-section" id="cities">
+  <div class="section-header">
+    <div>
+      <p class="section-eyebrow">Explore by destination</p>
+      <h2 class="section-title">Where are you headed?</h2>
+    </div>
+  </div>
+
+  <div class="cities-grid">
+    <div class="city-card active" onclick="selectCity('')" data-city="">
+      <img class="city-card-img" src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=400&q=80" alt="All Botswana" loading="lazy">
+      <div class="city-card-overlay"></div>
+      <div class="city-card-info">
+        <span class="city-card-name">All Cities</span>
+        <span class="city-card-count">14 stays</span>
+      </div>
+    </div>
+    <div class="city-card" onclick="selectCity('Gaborone')" data-city="Gaborone">
+      <img class="city-card-img" src="https://images.unsplash.com/photo-1580100586938-02822d99c4a8?w=400&q=80" alt="Gaborone" loading="lazy">
+      <div class="city-card-overlay"></div>
+      <div class="city-card-info">
+        <span class="city-card-name">Gaborone</span>
+        <span class="city-card-count">3 stays</span>
+      </div>
+    </div>
+    <div class="city-card" onclick="selectCity('Kasane')" data-city="Kasane">
+      <img class="city-card-img" src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=400&q=80" alt="Kasane" loading="lazy">
+      <div class="city-card-overlay"></div>
+      <div class="city-card-info">
+        <span class="city-card-name">Kasane</span>
+        <span class="city-card-count">3 stays</span>
+      </div>
+    </div>
+    <div class="city-card" onclick="selectCity('Maun')" data-city="Maun">
+      <img class="city-card-img" src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=400&q=80" alt="Maun" loading="lazy">
+      <div class="city-card-overlay"></div>
+      <div class="city-card-info">
+        <span class="city-card-name">Maun</span>
+        <span class="city-card-count">2 stays</span>
+      </div>
+    </div>
+    <div class="city-card" onclick="selectCity('Francistown')" data-city="Francistown">
+      <img class="city-card-img" src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=400&q=80" alt="Francistown" loading="lazy">
+      <div class="city-card-overlay"></div>
+      <div class="city-card-info">
+        <span class="city-card-name">Francistown</span>
+        <span class="city-card-count">2 stays</span>
+      </div>
+    </div>
+    <div class="city-card" onclick="selectCity('Palapye')" data-city="Palapye">
+      <img class="city-card-img" src="https://images.unsplash.com/photo-1550358864-518f202c02ba?w=400&q=80" alt="Palapye" loading="lazy">
+      <div class="city-card-overlay"></div>
+      <div class="city-card-info">
+        <span class="city-card-name">Palapye</span>
+        <span class="city-card-count">1 stay</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+  LISTINGS
+  ============================================================ -->
+<section class="listings-section" id="listings">
+  <div class="section-header">
+    <div>
+      <p class="section-eyebrow">Featured guesthouses</p>
+      <h2 class="section-title" id="listingsTitle">All stays</h2>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-pill active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-pill" onclick="setFilter('featured', this)">⭐ Featured</button>
+    <button class="filter-pill" onclick="setFilter('budget', this)">Budget (under P400)</button>
+    <button class="filter-pill" onclick="setFilter('mid', this)">Mid-range</button>
+    <button class="filter-pill" onclick="setFilter('premium', this)">Premium</button>
+  </div>
+
+  <div class="listings-grid" id="listingsGrid">
+    <!-- skeleton -->
+    <div class="skeleton-card"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton sk-line w-80"></div><div class="skeleton sk-line w-60"></div><div class="skeleton sk-line w-40"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton sk-line w-80"></div><div class="skeleton sk-line w-60"></div><div class="skeleton sk-line w-40"></div></div></div>
+    <div class="skeleton-card"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton sk-line w-80"></div><div class="skeleton sk-line w-60"></div><div class="skeleton sk-line w-40"></div></div></div>
+  </div>
+</section>
+
+<!-- ============================================================
+  HOST BAND
+  ============================================================ -->
+<div class="host-band" style="max-width:1200px; margin:0 auto 80px;">
+  <div>
+    <p class="host-band-tag">For Property Owners</p>
+    <h2 class="host-band-title">Turn your guesthouse<br>into a thriving business</h2>
+    <p class="host-band-sub">Join Botswana's fastest-growing guesthouse platform. Get visibility, manage bookings, and grow your business — all in one place.</p>
+    <div class="host-band-perks">
+      <div class="host-perk"><div class="host-perk-icon">📊</div> Real-time analytics</div>
+      <div class="host-perk"><div class="host-perk-icon">💬</div> Direct WhatsApp bookings</div>
+      <div class="host-perk"><div class="host-perk-icon">⭐</div> Guest reviews & ratings</div>
+      <div class="host-perk"><div class="host-perk-icon">🆓</div> Free to list</div>
+    </div>
+  </div>
+  <a href="/list-property.html" class="btn-gold btn-lg" style="white-space:nowrap">List Your Property</a>
+</div>
+
+<!-- ============================================================
+  PROPERTY MODAL
+  ============================================================ -->
+<div class="modal-overlay" id="propertyModal" onclick="closeModal(event)">
+  <div class="modal-sheet" id="modalSheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModalBtn()" style="position:absolute;top:14px;right:14px;z-index:10">✕</button>
+
+    <!-- Gallery -->
+    <div class="modal-gallery" id="modalGallery">
+      <div class="gallery-img active"><img src="" alt="" id="galleryImg0" loading="lazy"></div>
+    </div>
+    <button class="gallery-prev" onclick="galleryNav(-1)">‹</button>
+    <button class="gallery-next" onclick="galleryNav(1)">›</button>
+    <div class="gallery-dots" id="galleryDots"></div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <h2 class="modal-title" id="modalName">Loading...</h2>
+      <div class="modal-meta">
+        <div class="modal-location">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="modalLocation"></span>
+        </div>
+        <div class="modal-rating-row">
+          <div class="stars" id="modalStars"></div>
+          <span id="modalRatingNum" style="font-weight:700;font-size:.9rem"></span>
+          <span id="modalReviewCount" style="color:var(--ink-lt);font-size:.85rem"></span>
+        </div>
+        <div class="modal-price">
+          <span class="modal-price-num" id="modalPrice"></span>
+          <span class="modal-price-per">/night</span>
+        </div>
+      </div>
+
+      <p class="modal-desc" id="modalDesc"></p>
+
+      <!-- Amenities -->
+      <h3 class="modal-section-title">Amenities</h3>
+      <div class="amenities-grid" id="modalAmenities"></div>
+
+      <!-- Contact / Book -->
+      <div class="contact-card">
+        <h3 class="contact-title">Get in Touch</h3>
+        <p class="contact-sub">Contact the property to confirm availability and make your booking.</p>
+        <div class="contact-btns">
+          <button class="btn-whatsapp" id="whatsappBtn" onclick="handleBooking('whatsapp')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.985-1.418A9.943 9.943 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+            WhatsApp
+          </button>
+          <button class="btn-call" id="callBtn" onclick="handleBooking('call')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l1.77-1.77a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Call
+          </button>
+        </div>
+        <div class="booking-note">
+          <span class="pending-badge">Pending</span>
+          <span>Booking marked as pending until confirmed by both parties</span>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="reviews-section">
+        <h3 class="modal-section-title">Guest Reviews</h3>
+        <div class="reviews-summary" id="reviewsSummary">
+          <div>
+            <div class="reviews-big-num" id="summaryNum">—</div>
+            <div class="reviews-out-of">out of 5</div>
+          </div>
+          <div>
+            <div class="reviews-stars" id="summaryStars"></div>
+            <div class="reviews-count" id="summaryCount"></div>
+          </div>
+        </div>
+        <div id="reviewsList"></div>
+
+        <!-- Write Review -->
+        <div class="write-review" id="writeReviewBox">
+          <div class="write-review-title">Leave a Review</div>
+          <div id="reviewFormContent">
+            <div class="login-prompt" id="reviewLoginPrompt">
+              <a href="/auth.html">Sign in</a> to leave a review
+            </div>
+            <div id="reviewForm" style="display:none">
+              <div class="star-picker" id="starPicker">
+                <button class="star-pick-btn" data-val="1" onclick="setRating(1)">★</button>
+                <button class="star-pick-btn" data-val="2" onclick="setRating(2)">★</button>
+                <button class="star-pick-btn" data-val="3" onclick="setRating(3)">★</button>
+                <button class="star-pick-btn" data-val="4" onclick="setRating(4)">★</button>
+                <button class="star-pick-btn" data-val="5" onclick="setRating(5)">★</button>
+              </div>
+              <textarea class="form-textarea" id="reviewComment" placeholder="Share your experience at this guesthouse…"></textarea>
+              <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /modal-body -->
+  </div>
+</div>
+
+<!-- Login Gate Modal -->
+<div class="gate-overlay" id="gateOverlay" onclick="closeGate(event)">
+  <div class="gate-card" onclick="event.stopPropagation()">
+    <div class="gate-icon">🔐</div>
+    <h3 class="gate-title">Sign in to Book</h3>
+    <p class="gate-sub">Create a free account to contact guesthouses, track your bookings, and leave reviews.</p>
+    <div class="gate-btns">
+      <a href="/auth.html" class="btn-primary" style="display:block;text-align:center;padding:14px">Sign In</a>
+      <a href="/auth.html?mode=signup" class="btn-ghost" style="display:block;text-align:center;padding:14px">Create Free Account</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+  FOOTER
+  ============================================================ -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand-logo">
+        <img src="/image/logo.png" alt="" width="36" onerror="this.style.display='none'">
+        <span class="footer-brand-name">accolink</span>
+      </div>
+      <p class="footer-brand-desc">Botswana's home for guesthouse discovery. Find verified stays across every corner of the country.</p>
+    </div>
+    <div>
+      <p class="footer-col-title">Discover</p>
+      <div class="footer-links">
+        <a href="#" onclick="selectCity('Gaborone')">Gaborone</a>
+        <a href="#" onclick="selectCity('Kasane')">Kasane</a>
+        <a href="#" onclick="selectCity('Maun')">Maun</a>
+        <a href="#" onclick="selectCity('Francistown')">Francistown</a>
+        <a href="#" onclick="selectCity('Palapye')">Palapye</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-title">Hosting</p>
+      <div class="footer-links">
+        <a href="/list-property.html">List Your Property</a>
+        <a href="/dashboard.html">Host Dashboard</a>
+        <a href="/help.html">How it Works</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-title">Company</p>
+      <div class="footer-links">
+        <a href="/help.html">Help Centre</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom footer-pad">
+    <div class="footer-legal">
+      <span class="footer-copy">©2026 Accolink Guesthouses</span>
+      <span class="footer-sep">·</span>
+      <button class="footer-legal-btn" onclick="window.location='/privacy.html'">Privacy</button>
+      <span class="footer-sep">·</span>
+      <button class="footer-legal-btn" onclick="window.location='/terms.html'">Terms</button>
+      <span class="footer-sep">·</span>
+      <button class="footer-legal-btn" onclick="window.location='/help.html'">Help</button>
+    </div>
+    <div class="footer-right">
+      <div class="footer-currency">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        <span>BWP</span> Botswana Pula
+      </div>
+      <div class="footer-social">
+        <a href="https://instagram.com" class="social-btn" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://twitter.com" class="social-btn" target="_blank" rel="noopener" aria-label="X (Twitter)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href="https://facebook.com" class="social-btn" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+  SCRIPTS
+  ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/js/config.js"></script>
+<script>
+// ---- STATE ----
+let allListings   = [];
+let filtered      = [];
+let activeCity    = '';
+let activeFilter  = 'all';
+let budgetFilter  = '';
+let currentGH     = null;
+let galleryImages = [];
+let galleryIdx    = 0;
+let reviewRating  = 0;
+
+// ---- NAV SCROLL ----
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 60) {
+    nav.classList.add('scrolled');
+    nav.classList.remove('hero-nav');
+  } else {
+    nav.classList.remove('scrolled');
+    nav.classList.add('hero-nav');
+  }
+}, { passive: true });
+
+// ---- MOBILE MENU ----
+function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+function closeMobileMenu()  { document.getElementById('mobileMenu').classList.remove('open'); }
+
+function scrollToSection(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ---- LOAD LISTINGS ----
+async function loadListings() {
+  const { data, error } = await API.getGuesthouses({ city: activeCity || null });
+  if (error) { console.error(error); return; }
+  allListings = data || [];
+  document.getElementById('statProps').textContent = allListings.length;
+  applyFilters();
+}
+
+function applyFilters() {
+  filtered = allListings.filter(gh => {
+    let ok = true;
+    if (activeFilter === 'featured') ok = gh.featured;
+    if (activeFilter === 'budget')   ok = gh.price_per_night < 400;
+    if (activeFilter === 'mid')      ok = gh.price_per_night >= 400 && gh.price_per_night <= 600;
+    if (activeFilter === 'premium')  ok = gh.price_per_night > 600;
+    if (budgetFilter === 'budget')   ok = ok && gh.price_per_night < 400;
+    if (budgetFilter === 'mid')      ok = ok && gh.price_per_night >= 400 && gh.price_per_night <= 600;
+    if (budgetFilter === 'premium')  ok = ok && gh.price_per_night > 600;
+    return ok;
+  });
+  renderListings(filtered);
+}
+
+function renderListings(list) {
+  const grid = document.getElementById('listingsGrid');
+  const title = document.getElementById('listingsTitle');
+  title.textContent = activeCity ? `${activeCity} stays` : 'All stays';
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-state-icon">🏠</div>
+      <h3 class="empty-state-title">No properties found</h3>
+      <p>Try a different city or filter</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(gh => {
+    const rating = parseFloat(gh.avg_rating) || 0;
+    const featured = gh.featured ? '<span class="card-badge featured">⭐ Featured</span>' : '';
+    const img = gh.primary_image || `https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80`;
+    return `
+    <div class="listing-card" onclick="openModal('${gh.id}')">
+      <div class="card-image-wrap">
+        <img src="${img}" alt="${gh.name}" loading="lazy">
+        ${featured}
+        <div class="card-rating-overlay">
+          <span class="star">★</span>
+          ${rating > 0 ? rating.toFixed(1) : 'New'}
+          ${gh.review_count > 0 ? `<span style="opacity:.6">(${gh.review_count})</span>` : ''}
+        </div>
+      </div>
+      <div class="card-body">
+        <h3 class="card-name">${gh.name}</h3>
+        <div class="card-location">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${gh.neighborhood ? gh.neighborhood + ', ' : ''}${gh.city}
+        </div>
+        <div class="card-amenities" id="amenities_${gh.id}">
+          <span class="amenity-chip" style="opacity:.5">Loading...</span>
+        </div>
+        <div class="card-footer">
+          <div class="card-price">
+            <span class="card-price-num">${Utils.formatPrice(gh.price_per_night)}</span>
+            <span class="card-price-per"> / night</span>
+          </div>
+          <button class="btn-explore" onclick="event.stopPropagation(); openModal('${gh.id}')">Explore</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Load amenities in background
+  list.forEach(gh => loadCardAmenities(gh.id));
+
+  // Track views
+  list.forEach(gh => API.trackEvent(gh.id, 'view', window._currentUser?.id || null));
+}
+
+async function loadCardAmenities(ghId) {
+  const { data } = await API.getAmenities(ghId);
+  const el = document.getElementById(`amenities_${ghId}`);
+  if (!el || !data) return;
+  const items = data.map(r => r.amenities).filter(Boolean);
+  const show  = items.slice(0, 3);
+  const extra = items.length - 3;
+  el.innerHTML = show.map(a => `<span class="amenity-chip">${a.icon || ''} ${a.name}</span>`).join('')
+    + (extra > 0 ? `<span class="amenity-chip-more">+${extra}</span>` : '');
+}
+
+// ---- FILTERS ----
+function selectCity(city) {
+  activeCity = city;
+  document.querySelectorAll('.city-card').forEach(c => c.classList.toggle('active', c.dataset.city === city));
+  document.getElementById('heroCity').value = city;
+  loadListings();
+  document.getElementById('listings').scrollIntoView({ behavior: 'smooth' });
+}
+
+function setFilter(filter, btn) {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function filterByCity(val)   { activeCity   = val; }
+function filterByBudget(val) { budgetFilter = val; }
+function applySearch() {
+  loadListings();
+  document.getElementById('listings').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ---- MODAL ----
+async function openModal(ghId) {
+  const overlay = document.getElementById('propertyModal');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Reset
+  currentGH = null; galleryImages = []; galleryIdx = 0;
+  document.getElementById('modalName').textContent = 'Loading…';
+  document.getElementById('modalDesc').textContent = '';
+  document.getElementById('modalAmenities').innerHTML = '';
+  document.getElementById('reviewsList').innerHTML = '';
+
+  // Track click
+  API.trackEvent(ghId, 'click', window._currentUser?.id || null);
+
+  // Fetch data
+  const [{ data: gh }, { data: images }, { data: amenities }, { data: reviews }] = await Promise.all([
+    API.getGuesthouse(ghId),
+    API.getGuestHouseImages(ghId),
+    API.getAmenities(ghId),
+    API.getReviews(ghId)
+  ]);
+
+  if (!gh) return;
+  currentGH = gh;
+
+  // Basic info
+  document.getElementById('modalName').textContent = gh.name;
+  document.getElementById('modalLocation').textContent = `${gh.neighborhood ? gh.neighborhood + ', ' : ''}${gh.city}`;
+  document.getElementById('modalDesc').textContent = gh.description || 'No description available.';
+
+  const price    = Utils.formatPrice(gh.price_per_night);
+  document.getElementById('modalPrice').textContent = price;
+
+  const rating = parseFloat(gh.avg_rating) || 0;
+  document.getElementById('modalStars').innerHTML = Utils.stars(rating);
+  document.getElementById('modalRatingNum').textContent = rating > 0 ? rating.toFixed(1) : '';
+  document.getElementById('modalReviewCount').textContent = gh.review_count > 0 ? `(${gh.review_count} reviews)` : '(no reviews yet)';
+
+  // Gallery
+  galleryImages = images?.length ? images : [{ url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' }];
+  buildGallery();
+
+  // Amenities
+  const ams = amenities?.map(r => r.amenities).filter(Boolean) || [];
+  document.getElementById('modalAmenities').innerHTML = ams.length
+    ? ams.map(a => `<div class="amenity-item"><span class="amenity-item-icon">${a.icon||'•'}</span>${a.name}</div>`).join('')
+    : '<p style="color:var(--ink-lt)">No amenities listed</p>';
+
+  // Reviews
+  renderReviews(reviews || [], rating, gh.review_count);
+
+  // Review form auth
+  const user = window._currentUser;
+  document.getElementById('reviewLoginPrompt').style.display = user ? 'none' : 'block';
+  document.getElementById('reviewForm').style.display        = user ? 'block' : 'none';
+}
+
+function buildGallery() {
+  const gallery = document.getElementById('modalGallery');
+  const dotsEl  = document.getElementById('galleryDots');
+  gallery.innerHTML = '';
+  dotsEl.innerHTML  = '';
+
+  galleryImages.forEach((img, i) => {
+    const div = document.createElement('div');
+    div.className = 'gallery-img' + (i === 0 ? ' active' : '');
+    div.innerHTML = `<img src="${img.url}" alt="" loading="${i === 0 ? 'eager' : 'lazy'}">`;
+    gallery.appendChild(div);
+
+    const dot = document.createElement('div');
+    dot.className = 'gallery-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dotsEl.appendChild(dot);
+  });
+
+  // Re-append nav buttons
+  const pv = document.querySelector('.gallery-prev');
+  const nx = document.querySelector('.gallery-next');
+  if (pv) gallery.parentElement.appendChild(pv);
+  if (nx) gallery.parentElement.appendChild(nx);
+}
+
+function galleryNav(dir) {
+  const imgs = document.querySelectorAll('.gallery-img');
+  const dots = document.querySelectorAll('.gallery-dot');
+  imgs[galleryIdx].classList.remove('active');
+  dots[galleryIdx]?.classList.remove('active');
+  galleryIdx = (galleryIdx + dir + imgs.length) % imgs.length;
+  imgs[galleryIdx].classList.add('active');
+  dots[galleryIdx]?.classList.add('active');
+}
+
+function goToSlide(i) {
+  const imgs = document.querySelectorAll('.gallery-img');
+  const dots = document.querySelectorAll('.gallery-dot');
+  imgs[galleryIdx].classList.remove('active');
+  dots[galleryIdx]?.classList.remove('active');
+  galleryIdx = i;
+  imgs[i].classList.add('active');
+  dots[i]?.classList.add('active');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('propertyModal')) closeModalBtn();
+}
+function closeModalBtn() {
+  document.getElementById('propertyModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ---- BOOKING ----
+async function handleBooking(method) {
+  const user = window._currentUser;
+  if (!user) {
+    document.getElementById('gateOverlay').classList.add('open');
+    return;
+  }
+  if (!currentGH) return;
+
+  // Track booking request
+  await API.trackEvent(currentGH.id, 'booking_request', user.id);
+
+  // Create booking record
+  const name = user.user_metadata?.full_name || user.email;
+  const { error } = await API.createBooking(currentGH.id, user.id, method, name);
+  if (error) { Utils.toast('Could not record booking. Please try again.', 'error'); return; }
+
+  if (method === 'whatsapp') {
+    const phone = currentGH.whatsapp || currentGH.phone || '';
+    if (!phone) { Utils.toast('No WhatsApp number on file', 'error'); return; }
+    const msg = encodeURIComponent(`Hello! I would like to enquire about availability at your guesthouse`);
+    window.open(`https://wa.me/${phone.replace(/\D/g,'')}?text=${msg}`, '_blank');
+  } else {
+    const phone = currentGH.phone;
+    if (!phone) { Utils.toast('No phone number on file', 'error'); return; }
+    window.location.href = `tel:${phone}`;
+  }
+
+  Utils.toast('Booking request sent! Check your dashboard.', 'success');
+}
+
+function closeGate(e) {
+  if (e.target === document.getElementById('gateOverlay')) {
+    document.getElementById('gateOverlay').classList.remove('open');
+  }
+}
+
+// ---- REVIEWS ----
+function renderReviews(reviews, avgRating, count) {
+  const summaryNum   = document.getElementById('summaryNum');
+  const summaryStars = document.getElementById('summaryStars');
+  const summaryCount = document.getElementById('summaryCount');
+  const list         = document.getElementById('reviewsList');
+
+  summaryNum.textContent   = avgRating > 0 ? avgRating.toFixed(1) : '—';
+  summaryStars.innerHTML   = Utils.stars(avgRating);
+  summaryCount.textContent = `${count || 0} review${count !== 1 ? 's' : ''}`;
+
+  list.innerHTML = reviews.map(r => {
+    const name   = r.reviewer_name || r.profiles?.full_name || 'Guest';
+    const letter = name[0].toUpperCase();
+    return `
+    <div class="review-card">
+      <div class="review-header">
+        <div class="review-avatar">${letter}</div>
+        <div>
+          <div class="review-name">${name}</div>
+          <div class="review-date">${Utils.timeAgo(r.created_at)}</div>
+        </div>
+        <div class="review-stars" style="margin-left:auto">
+          ${Utils.stars(r.rating)}
+        </div>
+      </div>
+      <p class="review-comment">${r.comment || ''}</p>
+    </div>`;
+  }).join('') || '<p style="color:var(--ink-lt);font-size:.9rem">No reviews yet. Be the first!</p>';
+}
+
+function setRating(val) {
+  reviewRating = val;
+  document.querySelectorAll('.star-pick-btn').forEach(b => {
+    b.classList.toggle('selected', parseInt(b.dataset.val) <= val);
+  });
+}
+
+async function submitReview() {
+  const user    = window._currentUser;
+  const comment = document.getElementById('reviewComment').value.trim();
+  if (!user || !currentGH) return;
+  if (!reviewRating) { Utils.toast('Please select a star rating', 'error'); return; }
+
+  const name = user.user_metadata?.full_name || user.email;
+  const { error } = await API.addReview(currentGH.id, user.id, reviewRating, comment, name);
+  if (error) { Utils.toast('Could not submit review. You may have already reviewed this property.', 'error'); return; }
+
+  Utils.toast('Review submitted! Thank you.', 'success');
+  document.getElementById('reviewComment').value = '';
+  reviewRating = 0;
+  document.querySelectorAll('.star-pick-btn').forEach(b => b.classList.remove('selected'));
+
+  // Reload reviews
+  const { data: reviews } = await API.getReviews(currentGH.id);
+  const { data: updated }  = await API.getGuesthouse(currentGH.id);
+  if (updated) {
+    currentGH = updated;
+    renderReviews(reviews || [], parseFloat(updated.avg_rating) || 0, updated.review_count);
+  }
+}
+
+// ---- AUTH STATE ----
+async function handleSignOut() {
+  await Auth.signOut();
+  window.location.reload();
+}
+
+document.addEventListener('authChange', ({ detail: { user } }) => {
+  const mobileAuth = document.getElementById('mobileAuthLinks');
+  const mobileUser = document.getElementById('mobileUserLinks');
+  if (mobileAuth) mobileAuth.style.display = user ? 'none' : 'block';
+  if (mobileUser) mobileUser.style.display = user ? 'block' : 'none';
+});
+
+// ---- INIT ----
+loadListings();
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

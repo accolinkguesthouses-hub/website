@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help Centre — Accolink</title>
+  <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260430" sizes="96x96">
+  <link rel="shortcut icon" href="/favicon.ico?v=20260430">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .faq-item {
+      background: white; border-radius: var(--r-lg);
+      border: 1px solid var(--border); margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .faq-q {
+      padding: 18px 20px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      color: var(--ink); transition: background var(--t);
+    }
+    .faq-q:hover { background: var(--cream); }
+    .faq-chevron { font-size: .8rem; color: var(--ink-lt); transition: transform .3s; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-a {
+      padding: 0 20px; max-height: 0; overflow: hidden;
+      transition: max-height .4s ease, padding .3s ease;
+      color: var(--ink-mid); line-height: 1.7; font-size: .9rem;
+    }
+    .faq-item.open .faq-a { max-height: 400px; padding: 0 20px 18px; }
+
+    .help-hero {
+      background: linear-gradient(135deg, var(--g800), var(--g900));
+      padding: 80px 24px 60px; text-align: center;
+    }
+    .help-search {
+      max-width: 500px; margin: 28px auto 0;
+      display: flex; background: white; border-radius: var(--r-xl);
+      padding: 6px 6px 6px 20px; box-shadow: var(--sh-lg);
+    }
+    .help-search input {
+      flex: 1; border: none; outline: none;
+      font-size: .95rem; color: var(--ink); background: transparent;
+    }
+    .help-search button {
+      background: var(--g700); color: white;
+      padding: 10px 22px; border-radius: var(--r-lg);
+      font-weight: 700; font-size: .9rem;
+    }
+
+    .help-cards {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px; margin-bottom: 48px;
+    }
+    .help-card {
+      background: white; border-radius: var(--r-xl);
+      padding: 28px 24px; border: 1px solid var(--border);
+      text-align: center; cursor: pointer; transition: all var(--t);
+    }
+    .help-card:hover { box-shadow: var(--sh-md); transform: translateY(-4px); }
+    .help-card-icon { font-size: 2rem; margin-bottom: 12px; }
+    .help-card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+    .help-card-sub { font-size: .82rem; color: var(--ink-lt); }
+  </style>
+</head>
+<body>
+<nav class="nav scrolled" style="background:white;border-bottom:1px solid var(--border)">
+  <a href="/" class="nav-logo">
+    <img src="/image/logo.png" alt="Accolink" onerror="this.style.display='none'">
+    <span class="nav-logo-text">accolink</span>
+  </a>
+  <div class="nav-links">
+    <a href="/">Browse Stays</a>
+    <a href="/list-property.html">List Property</a>
+  </div>
+  <div style="display:flex;gap:10px">
+    <a href="/auth.html" class="btn-ghost">Sign In</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="help-hero">
+  <p class="section-eyebrow" style="color:var(--gold-lt);margin-bottom:8px">Support</p>
+  <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.5rem);color:white;margin-bottom:12px">How can we help?</h1>
+  <p style="color:rgba(255,255,255,.6);font-size:1.05rem">Find answers to common questions about Accolink</p>
+  <div class="help-search">
+    <input type="text" placeholder="Search help articles…" id="faqSearch" oninput="filterFAQ(this.value)">
+    <button>Search</button>
+  </div>
+</div>
+
+<div style="max-width:900px;margin:0 auto;padding:60px 24px 80px">
+
+  <!-- Quick links -->
+  <div class="help-cards">
+    <div class="help-card" onclick="scrollToFAQ('guests')">
+      <div class="help-card-icon">🛏️</div>
+      <div class="help-card-title">For Guests</div>
+      <div class="help-card-sub">Finding and booking stays</div>
+    </div>
+    <div class="help-card" onclick="scrollToFAQ('hosts')">
+      <div class="help-card-icon">🏠</div>
+      <div class="help-card-title">For Hosts</div>
+      <div class="help-card-sub">Listing and managing properties</div>
+    </div>
+    <div class="help-card" onclick="scrollToFAQ('bookings')">
+      <div class="help-card-icon">📅</div>
+      <div class="help-card-title">Bookings</div>
+      <div class="help-card-sub">How the booking process works</div>
+    </div>
+    <div class="help-card" onclick="scrollToFAQ('account')">
+      <div class="help-card-icon">👤</div>
+      <div class="help-card-title">Account</div>
+      <div class="help-card-sub">Sign in, settings, and security</div>
+    </div>
+  </div>
+
+  <!-- FAQ: Guests -->
+  <h2 id="sec-guests" style="font-family:'Cormorant Garamond',serif;margin-bottom:20px">For Guests</h2>
+  <div id="faqGuests">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I find a guesthouse? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Browse our listings on the home page. Use the search bar to filter by city and budget, or use the city cards to explore by destination. Click "Explore Guesthouse" on any listing to see full details, photos, amenities, and reviews.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Do I need an account to browse listings? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">No — you can browse all listings, photos, amenities, and reviews without an account. However, you'll need a free Accolink account to contact a guesthouse or leave a review.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I contact a guesthouse? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Open any listing and click "WhatsApp" or "Call". WhatsApp will open with an automated message ready to send. The call button will dial the guesthouse directly. You'll need to be signed in to use these features so we can track your booking status.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I leave a review? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Sign in, open a guesthouse listing, and scroll down to the reviews section. Select a star rating, write your experience, and click "Submit Review". You can only leave one review per property.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Can I track my bookings? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Yes. Go to your Dashboard after signing in. Under "Bookings" you'll see all your pending and confirmed booking requests. Once a guesthouse confirms, your booking status changes from Pending to Successful.</div>
+    </div>
+  </div>
+
+  <!-- FAQ: Hosts -->
+  <h2 id="sec-hosts" style="font-family:'Cormorant Garamond',serif;margin:40px 0 20px">For Hosts</h2>
+  <div id="faqHosts">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I list my guesthouse? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Create a free account, then click "List Property" in the navigation. Follow the 5-step form: basic info → description & contact → amenities → photos → review & publish. Your listing goes live immediately.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Is it free to list? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Yes, listing your property on Accolink is completely free. We charge no commission or subscription fees. Our mission is to connect Botswana's guesthouses with travellers.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I see how my listing is performing? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Your Dashboard shows real-time analytics for each property: total views (how many people scrolled past your listing), clicks (how many opened your listing), booking requests (how many contacted you), ratings received, pending bookings, and successful bookings.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do booking requests work for hosts? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">When a guest contacts you via WhatsApp or Call, a booking is automatically logged as "Pending" in both dashboards. Once you've confirmed with the guest directly, go to your Bookings tab and click "Confirm" to mark it as Successful — or "Cancel" if unavailable.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Can I add multiple properties? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Yes. You can list as many properties as you own. Each property has its own analytics, booking tracker, and reviews. Access all your listings from the "My Properties" section of your dashboard.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I get the Featured badge? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Featured status is currently assigned by Accolink based on listing quality, photo count, review scores, and booking activity. Properties with complete profiles, great photos, and positive reviews are prioritised. Contact us to request a review.</div>
+    </div>
+  </div>
+
+  <!-- FAQ: Bookings -->
+  <h2 id="sec-bookings" style="font-family:'Cormorant Garamond',serif;margin:40px 0 20px">Bookings</h2>
+  <div id="faqBookings">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">What does "Pending" mean? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Pending means a guest has initiated contact via WhatsApp or phone, but neither party has confirmed the booking yet. Once you've spoken and agreed on dates, the host should click "Confirm" in their dashboard to mark it Successful.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">What WhatsApp message gets sent? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">The automated message reads: "Hello! I would like to enquire about availability at your guesthouse." This is prefilled in WhatsApp so the guest can send it immediately or customise it before sending.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Does Accolink handle payments? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">No. Accolink facilitates introductions between guests and hosts. Payment arrangements are made directly between the two parties — cash, EFT, or any method you agree on.</div>
+    </div>
+  </div>
+
+  <!-- FAQ: Account -->
+  <h2 id="sec-account" style="font-family:'Cormorant Garamond',serif;margin:40px 0 20px">Account</h2>
+  <div id="faqAccount">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">How do I reset my password? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">On the sign-in page, click "Forgot password?" and enter your email. You'll receive a reset link. If you don't see it, check your spam folder.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFAQ(this)">Can I delete my account? <span class="faq-chevron">▼</span></div>
+      <div class="faq-a">Yes. Email us at support@accolinkguesthouses.com with the subject "Delete My Account" and we'll remove all your data within 7 business days.</div>
+    </div>
+  </div>
+
+  <!-- Contact CTA -->
+  <div style="background:var(--g800);border-radius:var(--r-xl);padding:40px;text-align:center;margin-top:60px">
+    <div style="font-size:2rem;margin-bottom:14px">💬</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;color:white;font-size:1.8rem;margin-bottom:10px">Still need help?</h2>
+    <p style="color:rgba(255,255,255,.6);margin-bottom:24px;font-size:1.05rem">Our team is available Monday–Friday, 8am–6pm (CAT)</p>
+    <a href="https://wa.me/26771234567?text=Hi%20Accolink%20support%2C%20I%20need%20help%20with..." class="btn-whatsapp" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:var(--r-md);text-decoration:none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.985-1.418A9.943 9.943 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+      Chat with Support
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-bottom footer-pad" style="max-width:1200px;margin:0 auto;border-top:1px solid rgba(255,255,255,.07)">
+    <div class="footer-legal">
+      <span class="footer-copy">©2026 Accolink Guesthouses</span>
+      <span class="footer-sep">·</span>
+      <button class="footer-legal-btn" onclick="window.location='/privacy.html'">Privacy</button>
+      <span class="footer-sep">·</span>
+      <button class="footer-legal-btn" onclick="window.location='/terms.html'">Terms</button>
+      <span class="footer-sep">·</span>
+      <button class="footer-legal-btn" onclick="window.location='/help.html'">Help</button>
+    </div>
+    <div class="footer-right">
+      <div class="footer-currency"><span>BWP</span> Botswana Pula</div>
+      <div class="footer-social">
+        <a href="https://instagram.com" class="social-btn" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="https://twitter.com" class="social-btn" target="_blank" rel="noopener" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        <a href="https://facebook.com" class="social-btn" target="_blank" rel="noopener" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleFAQ(btn) {
+  btn.parentElement.classList.toggle('open');
+}
+function scrollToFAQ(section) {
+  const map = { guests:'sec-guests', hosts:'sec-hosts', bookings:'sec-bookings', account:'sec-account' };
+  document.getElementById(map[section])?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function filterFAQ(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(q) ? 'block' : 'none';
+  });
+}
+</script>
+</body>
+</html>
