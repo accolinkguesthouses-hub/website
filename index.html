@@ -19,7 +19,6 @@
 <!-- NAV -->
 <nav class="nav hero-nav" id="mainNav">
   <a href="/" class="nav-logo">
-    <img src="/image/logo.png" alt="Accolink Guesthouses" onerror="this.style.display='none'">
     <span class="nav-logo-text">Accolink Guesthouses</span>
   </a>
   <div class="nav-links">
@@ -61,18 +60,17 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-content">
-    <h1 class="hero-title">
-      Find your perfect stay<br>
-      <span>across Botswana</span>
-    </h1>
+    <h1 class="hero-title">Find nearby stays<br><span>in Botswana</span></h1>
 
     <div class="search-widget">
-      <button class="search-btn" onclick="document.getElementById('listings').scrollIntoView({behavior:'smooth'})">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <div class="search-bar-wrap">
+        <svg class="search-bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
-        Browse Stays
-      </button>
+        <input type="text" id="heroSearch" class="search-bar-input" placeholder="Search guesthouse..."
+          oninput="filterBySearch(this.value)"
+          onkeydown="if(event.key==='Enter'){document.getElementById('listings').scrollIntoView({behavior:'smooth'})}">
+      </div>
     </div>
 
     <div class="hero-stats">
@@ -94,55 +92,13 @@
     </div>
   </div>
 
-  <div class="cities-grid">
-    <div class="city-card active" onclick="selectCity('')" data-city="">
-      <img class="city-card-img" src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=400&q=80" alt="All Botswana" loading="lazy">
-      <div class="city-card-overlay"></div>
-      <div class="city-card-info">
-        <span class="city-card-name">All Cities</span>
-        <span class="city-card-count">14 stays</span>
-      </div>
-    </div>
-    <div class="city-card" onclick="selectCity('Gaborone')" data-city="Gaborone">
-      <img class="city-card-img" src="https://images.unsplash.com/photo-1580100586938-02822d99c4a8?w=400&q=80" alt="Gaborone" loading="lazy">
-      <div class="city-card-overlay"></div>
-      <div class="city-card-info">
-        <span class="city-card-name">Gaborone</span>
-        <span class="city-card-count">3 stays</span>
-      </div>
-    </div>
-    <div class="city-card" onclick="selectCity('Kasane')" data-city="Kasane">
-      <img class="city-card-img" src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=400&q=80" alt="Kasane" loading="lazy">
-      <div class="city-card-overlay"></div>
-      <div class="city-card-info">
-        <span class="city-card-name">Kasane</span>
-        <span class="city-card-count">3 stays</span>
-      </div>
-    </div>
-    <div class="city-card" onclick="selectCity('Maun')" data-city="Maun">
-      <img class="city-card-img" src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=400&q=80" alt="Maun" loading="lazy">
-      <div class="city-card-overlay"></div>
-      <div class="city-card-info">
-        <span class="city-card-name">Maun</span>
-        <span class="city-card-count">2 stays</span>
-      </div>
-    </div>
-    <div class="city-card" onclick="selectCity('Francistown')" data-city="Francistown">
-      <img class="city-card-img" src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=400&q=80" alt="Francistown" loading="lazy">
-      <div class="city-card-overlay"></div>
-      <div class="city-card-info">
-        <span class="city-card-name">Francistown</span>
-        <span class="city-card-count">2 stays</span>
-      </div>
-    </div>
-    <div class="city-card" onclick="selectCity('Palapye')" data-city="Palapye">
-      <img class="city-card-img" src="https://images.unsplash.com/photo-1550358864-518f202c02ba?w=400&q=80" alt="Palapye" loading="lazy">
-      <div class="city-card-overlay"></div>
-      <div class="city-card-info">
-        <span class="city-card-name">Palapye</span>
-        <span class="city-card-count">1 stay</span>
-      </div>
-    </div>
+  <div class="cities-pills">
+    <button class="city-pill active" onclick="selectCity('')" data-city="">All Cities</button>
+    <button class="city-pill" onclick="selectCity('Gaborone')" data-city="Gaborone">Gaborone</button>
+    <button class="city-pill" onclick="selectCity('Kasane')" data-city="Kasane">Kasane</button>
+    <button class="city-pill" onclick="selectCity('Maun')" data-city="Maun">Maun</button>
+    <button class="city-pill" onclick="selectCity('Francistown')" data-city="Francistown">Francistown</button>
+    <button class="city-pill" onclick="selectCity('Palapye')" data-city="Palapye">Palapye</button>
   </div>
 </section>
 
@@ -151,7 +107,6 @@
   <div class="section-header">
     <div>
       <p class="section-eyebrow">Featured guesthouses</p>
-      <h2 class="section-title" id="listingsTitle">All stays</h2>
     </div>
   </div>
 
@@ -256,10 +211,6 @@
             Call
           </button>
         </div>
-        <div class="booking-note">
-          <span class="pending-badge">Pending</span>
-          Booking logged as pending until confirmed by both parties
-        </div>
       </div>
 
       <!-- Reviews -->
@@ -282,14 +233,15 @@
           <div id="reviewLoginPrompt" class="login-prompt"><a href="/auth.html">Sign in</a> to leave a review</div>
           <div id="reviewForm" style="display:none">
             <div class="star-picker" id="starPicker">
-              <button class="star-pick-btn" data-val="1" onclick="setRating(1)">&#9733;</button>
-              <button class="star-pick-btn" data-val="2" onclick="setRating(2)">&#9733;</button>
-              <button class="star-pick-btn" data-val="3" onclick="setRating(3)">&#9733;</button>
-              <button class="star-pick-btn" data-val="4" onclick="setRating(4)">&#9733;</button>
-              <button class="star-pick-btn" data-val="5" onclick="setRating(5)">&#9733;</button>
+              <button class="star-pick-btn" data-val="1" onclick="setRating(1)" onmouseover="hoverRating(1)" onmouseout="hoverRating(0)">&#9733;</button>
+              <button class="star-pick-btn" data-val="2" onclick="setRating(2)" onmouseover="hoverRating(2)" onmouseout="hoverRating(0)">&#9733;</button>
+              <button class="star-pick-btn" data-val="3" onclick="setRating(3)" onmouseover="hoverRating(3)" onmouseout="hoverRating(0)">&#9733;</button>
+              <button class="star-pick-btn" data-val="4" onclick="setRating(4)" onmouseover="hoverRating(4)" onmouseout="hoverRating(0)">&#9733;</button>
+              <button class="star-pick-btn" data-val="5" onclick="setRating(5)" onmouseover="hoverRating(5)" onmouseout="hoverRating(0)">&#9733;</button>
             </div>
-            <textarea class="form-textarea" id="reviewComment" placeholder="Share your experience…"></textarea>
-            <button class="btn-primary" onclick="submitReview()">Submit Review</button>
+            <div class="star-label" id="starLabel" style="font-size:0.8rem;color:var(--ink-lt);margin-bottom:10px;min-height:18px"></div>
+            <textarea class="form-textarea" id="reviewComment" placeholder="Share your experience… (optional)"></textarea>
+            <button class="btn-primary" onclick="submitReview()" id="submitReviewBtn" disabled style="opacity:0.45;cursor:not-allowed">Submit Review</button>
           </div>
         </div>
       </div>
@@ -320,7 +272,7 @@
         <img src="/image/logo.png" alt="" onerror="this.style.display='none'">
         <span class="footer-brand-name">Accolink Guesthouses</span>
       </div>
-      <p class="footer-brand-desc">Botswana's home for guesthouse discovery. Find verified stays across every corner of the country.</p>
+      <p class="footer-brand-desc" style="display:none">Botswana's home for guesthouse discovery. Find verified stays across every corner of the country.</p>
     </div>
     <div>
       <p class="footer-col-title">Discover</p>
@@ -361,8 +313,7 @@
     </div>
     <div class="footer-right">
       <div class="footer-currency">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-        BWP
+        <span>BWP</span> Botswana Pula
       </div>
       <div class="footer-social">
         <a href="https://instagram.com" class="social-btn" target="_blank" rel="noopener" aria-label="Instagram">
@@ -495,6 +446,10 @@ async function loadListings() {
 
 function applyFilters() {
   let filtered = allListings.filter(gh => {
+    if (searchQuery) {
+      const haystack = `${gh.name} ${gh.city} ${gh.neighborhood||''}`.toLowerCase();
+      if (!haystack.includes(searchQuery)) return false;
+    }
     if (activeFilter === 'featured') return gh.featured;
     if (activeFilter === 'budget')   return gh.price_per_night < 400;
     if (activeFilter === 'mid')      return gh.price_per_night >= 400 && gh.price_per_night <= 600;
@@ -506,8 +461,6 @@ function applyFilters() {
 
 function renderListings(list) {
   const grid  = document.getElementById('listingsGrid');
-  const title = document.getElementById('listingsTitle');
-  title.textContent = activeCity ? `${activeCity} stays` : 'All stays';
 
   if (!list.length) {
     grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
@@ -563,7 +516,7 @@ function renderListings(list) {
 // ── CITY / FILTER ──
 function selectCity(city) {
   activeCity = city;
-  document.querySelectorAll('.city-card').forEach(c => c.classList.toggle('active', c.dataset.city === city));
+  document.querySelectorAll('.city-pill').forEach(c => c.classList.toggle('active', c.dataset.city === city));
   loadListings();
   document.getElementById('listings').scrollIntoView({ behavior:'smooth' });
 }
@@ -716,9 +669,32 @@ function renderReviews(reviews, avgRating, count) {
   }).join('') || '<p style="color:var(--ink-lt);font-size:.875rem;padding:8px 0">No reviews yet — be the first!</p>';
 }
 
+let searchQuery = '';
+function filterBySearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  applyFilters();
+  if (searchQuery) document.getElementById('listings').scrollIntoView({ behavior:'smooth' });
+}
+
+const STAR_LABELS = ['','Terrible','Poor','Okay','Good','Excellent'];
+function hoverRating(val) {
+  const stars = document.querySelectorAll('.star-pick-btn');
+  if (val === 0) {
+    stars.forEach(b => b.classList.toggle('hovered', false));
+    return;
+  }
+  stars.forEach(b => b.classList.toggle('hovered', parseInt(b.dataset.val) <= val));
+  const label = document.getElementById('starLabel');
+  if (label) label.textContent = STAR_LABELS[val] || '';
+}
+
 function setRating(val) {
   reviewRating = val;
   document.querySelectorAll('.star-pick-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.val)<=val));
+  const label = document.getElementById('starLabel');
+  if (label) label.textContent = STAR_LABELS[val] || '';
+  const btn = document.getElementById('submitReviewBtn');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
 }
 
 async function submitReview() {
@@ -733,6 +709,9 @@ async function submitReview() {
   document.getElementById('reviewComment').value = '';
   reviewRating = 0;
   document.querySelectorAll('.star-pick-btn').forEach(b => b.classList.remove('selected'));
+  const lbl = document.getElementById('starLabel'); if (lbl) lbl.textContent = '';
+  const sbtn = document.getElementById('submitReviewBtn');
+  if (sbtn) { sbtn.disabled = true; sbtn.style.opacity = '0.45'; sbtn.style.cursor = 'not-allowed'; }
   try {
     const { data: reviews } = await API.getReviews(currentGH.id);
     const { data: updated } = await API.getGuesthouse(currentGH.id);
